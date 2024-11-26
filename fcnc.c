@@ -167,3 +167,12 @@ void saveSuppliers(Supplier suppliers[], int size);
 void loadSuppliers(Supplier suppliers[], int *size);
 int findSupplier(Supplier suppliers[], int size);
 void addCustomerIfNotPresent(Customer customers[], int *customerCount);
+
+// Function prototypes for Customer Management
+void addCustomer(Customer customers[], int *customerCount);
+void saveCustomers(Customer customers[], int size);
+void loadCustomers(Customer customers[], int *size);
+int findCustomerIndex(Customer customers[], int size, char customerID[10]);
+void updateLoyaltyPoints(Customer customers[], int customerIndex, float amountSpent);
+void viewCustomerDetails(Customer customers[], int customerCount);
+void applyLoyaltyDiscount(Customer customers[], int *customerCount, float *totalAmount);
