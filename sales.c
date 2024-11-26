@@ -5,18 +5,9 @@
 #include <string.h>
 #include <time.h>
 
-// Constants for Sales
-#define MAX_DISCOUNT 100 // Maximum allowable discount percentage
 
-// Function prototypes for Sales Management
-void recordSale(Product inventory[], int *inventorySize, Sale sales[], int *salesCount, Customer customers[], int customerCount);
-void generateBill(Sale sale);
-void applyDiscount(float *totalAmount);
-void dailySalesReport(Sale sales[], int size);
-void monthlySalesReport(Sale sales[], int size);
-void saveSales(Sale sales[], int size);
-void loadSales(Sale sales[], int *size);
-int findCustomer(Customer customers[], int size);
+
+
 
 // Record a Sales Transaction
 void recordSale(Product inventory[], int *inventorySize, Sale sales[], int *salesCount, Customer customers[], int customerCount) {
