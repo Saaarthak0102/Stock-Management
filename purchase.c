@@ -5,37 +5,6 @@
 #include <string.h>
 #include <time.h>
 
-// Constants for Purchase
-#define MAX_SUPPLIERS 100
-#define MAX_PURCHASES 1000
-
-// Structures for Supplier and Purchase
-typedef struct {
-    char supplierID[10];
-    char supplierName[MAX_NAME];
-    char contactInfo[50];
-    char address[100];
-} Supplier;
-
-typedef struct {
-    char purchaseID[10];
-    char productID[10];
-    char supplierID[10];
-    int quantityPurchased;
-    float totalCost;
-    char timeStamp[MAX_DATE_TIME];
-} Purchase;
-
-// Function prototypes for Purchase Management
-void addPurchase(Product inventory[], int *inventorySize, Purchase purchases[], int *purchaseCount, Supplier suppliers[], int *supplierCount);
-void supplierManagement(Supplier suppliers[], int *supplierCount);
-void purchaseReports(Purchase purchases[], int size);
-void savePurchases(Purchase purchases[], int size);
-void loadPurchases(Purchase purchases[], int *size);
-void saveSuppliers(Supplier suppliers[], int size);
-void loadSuppliers(Supplier suppliers[], int *size);
-int findSupplier(Supplier suppliers[], int size);
-void addCustomerIfNotPresent(Customer customers[], int *customerCount);
 
 // Add a Purchase
 void addPurchase(Product inventory[], int *inventorySize, Purchase purchases[], int *purchaseCount, Supplier suppliers[], int *supplierCount) {
