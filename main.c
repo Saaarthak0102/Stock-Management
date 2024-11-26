@@ -5,15 +5,6 @@
 #include <string.h>
 #include <time.h>
 
-#define MAX_CUSTOMERS 500
-#define MAX_EMPLOYEES 100
-#define MAX_PRODUCTS 100
-#define MAX_NAME 100
-#define CUSTOMERS_FILE "customers.txt"
-#define EMPLOYEES_FILE "employees.txt"
-#define PRODUCTS_FILE "products.txt"
-#define PURCHASES_FILE "purchases.txt"
-#define SALES_FILE "sales.txt"
 
 // Declare Structures (already defined earlier)
 extern Customer customers[MAX_CUSTOMERS];
