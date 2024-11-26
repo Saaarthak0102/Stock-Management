@@ -5,30 +5,11 @@
 #include <string.h>
 #include <time.h>
 
-// Constants for Employee Management
-#define MAX_EMPLOYEES 100
-#define ADMIN "admin"
-#define CASHIER "cashier"
-#define MANAGER "manager"
 
-// Structure for Employee
-typedef struct {
-    char employeeID[10];
-    char name[MAX_NAME];
-    char role[20];  // Role like "admin", "cashier", "manager"
-    char contactInfo[50];
-    int attendance[30];  // Store attendance for 30 days
-    int attendanceCount; // Number of days attended in the month
-} Employee;
 
-// Function prototypes for Employee Management
-void addEmployee(Employee employees[], int *employeeCount);
-void saveEmployees(Employee employees[], int size);
-void loadEmployees(Employee employees[], int *size);
-int findEmployeeIndex(Employee employees[], int size, char employeeID[10]);
-void recordAttendance(Employee employees[], int employeeIndex, int day);
-void viewEmployeeDetails(Employee employees[], int employeeCount);
-void restrictAccessByRole(Employee employees[], int employeeCount, char currentRole[20]);
+
+
+
 
 // Add a New Employee
 void addEmployee(Employee employees[], int *employeeCount) {
