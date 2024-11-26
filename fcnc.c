@@ -18,6 +18,12 @@
 #define EMPLOYEES_FILE "employees.csv"
 #define CUSTOMERS_FILE "customers.csv"
 
+// Constants for inventory
+#define MAX_CATEGORY 30
+#define MAX_SUPPLIER 50
+#define MIN_STOCK_THRESHOLD 10
+#define MAX_DATE 12 // Format: DD/MM/YYYY
+
 // Structures
 typedef struct {
     char productID[10];
