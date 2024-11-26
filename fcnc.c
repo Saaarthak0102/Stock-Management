@@ -17,6 +17,7 @@
 #define PURCHASE_FILE "purchases.csv"
 #define EMPLOYEES_FILE "employees.csv"
 #define CUSTOMERS_FILE "customers.csv"
+#define PRODUCTS_FILE "products.csv"
 
 // Constants for inventory
 #define MAX_CATEGORY 30
