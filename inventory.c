@@ -12,16 +12,6 @@
 #define MAX_DATE 12 // Format: DD/MM/YYYY
 
 // Extended Product structure to include category, supplier, etc.
-typedef struct {
-    char productID[10];
-    char productName[MAX_NAME];
-    char category[MAX_CATEGORY];
-    char supplier[MAX_SUPPLIER];
-    int quantity;
-    float costPrice;
-    float sellingPrice;
-    char expiryDate[MAX_DATE]; // Optional, use "N/A" if not applicable
-} Product;
 
 // Function prototypes for inventory management
 
