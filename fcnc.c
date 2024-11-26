@@ -24,6 +24,9 @@
 #define MIN_STOCK_THRESHOLD 10
 #define MAX_DATE 12 // Format: DD/MM/YYYY
 
+// Constants for Sales
+#define MAX_DISCOUNT 100 // Maximum allowable discount percentage
+
 // Structures
 typedef struct {
     char productID[10];
@@ -121,3 +124,13 @@ void updateStock(Product inventory[], int size);
 void deleteProduct(Product inventory[], int *size);
 void searchProduct(Product inventory[], int size);
 void checkStockAlerts(Product inventory[], int size);
+
+// Function prototypes for Sales Management
+void recordSale(Product inventory[], int *inventorySize, Sale sales[], int *salesCount, Customer customers[], int customerCount);
+void generateBill(Sale sale);
+void applyDiscount(float *totalAmount);
+void dailySalesReport(Sale sales[], int size);
+void monthlySalesReport(Sale sales[], int size);
+void saveSales(Sale sales[], int size);
+void loadSales(Sale sales[], int *size);
+int findCustomer(Customer customers[], int size);
