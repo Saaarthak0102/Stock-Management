@@ -5,17 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-// Constants for Customer Management
-#define MAX_CUSTOMERS 500
 
-// Structure for Customer
-typedef struct {
-    char customerID[10];
-    char name[MAX_NAME];
-    char contactInfo[50];
-    float loyaltyPoints;  // Points for loyalty program
-    int purchaseCount;
-} Customer;
 
 // Function prototypes for Customer Management
 void addCustomer(Customer customers[], int *customerCount);
