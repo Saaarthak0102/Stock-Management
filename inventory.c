@@ -5,15 +5,6 @@
 #include <string.h>
 #include <time.h>
 
-// Constants for inventory
-#define MAX_CATEGORY 30
-#define MAX_SUPPLIER 50
-#define MIN_STOCK_THRESHOLD 10
-#define MAX_DATE 12 // Format: DD/MM/YYYY
-
-// Extended Product structure to include category, supplier, etc.
-
-// Function prototypes for inventory management
 
 // View Inventory Stock Levels
 void viewStock(Product inventory[], int size) {
