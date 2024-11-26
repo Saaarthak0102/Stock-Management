@@ -24,12 +24,6 @@ typedef struct {
 } Product;
 
 // Function prototypes for inventory management
-void viewStock(Product inventory[], int size);
-void addNewProduct(Product inventory[], int *size);
-void updateStock(Product inventory[], int size);
-void deleteProduct(Product inventory[], int *size);
-void searchProduct(Product inventory[], int size);
-void checkStockAlerts(Product inventory[], int size);
 
 // View Inventory Stock Levels
 void viewStock(Product inventory[], int size) {
