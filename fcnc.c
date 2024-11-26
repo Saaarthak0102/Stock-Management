@@ -107,3 +107,11 @@ int findEmployeeIndex(Employee employees[], int size, const char *employeeID);
 void clearBuffer();
 void pauseAndClear();
 void printLineSeparator();
+
+// Inventory 
+void viewStock(Product inventory[], int size);
+void addNewProduct(Product inventory[], int *size);
+void updateStock(Product inventory[], int size);
+void deleteProduct(Product inventory[], int *size);
+void searchProduct(Product inventory[], int size);
+void checkStockAlerts(Product inventory[], int size);
