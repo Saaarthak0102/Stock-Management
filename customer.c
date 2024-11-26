@@ -6,16 +6,6 @@
 #include <time.h>
 
 
-
-// Function prototypes for Customer Management
-void addCustomer(Customer customers[], int *customerCount);
-void saveCustomers(Customer customers[], int size);
-void loadCustomers(Customer customers[], int *size);
-int findCustomerIndex(Customer customers[], int size, char customerID[10]);
-void updateLoyaltyPoints(Customer customers[], int customerIndex, float amountSpent);
-void viewCustomerDetails(Customer customers[], int customerCount);
-void applyLoyaltyDiscount(Customer customers[], int *customerCount, float *totalAmount);
-
 // Add a New Customer
 void addCustomer(Customer customers[], int *customerCount) {
     if (*customerCount >= MAX_CUSTOMERS) {
