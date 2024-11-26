@@ -5,29 +5,6 @@
 #include <string.h>
 #include <time.h>
 
-
-// Declare Structures (already defined earlier)
-extern Customer customers[MAX_CUSTOMERS];
-extern Employee employees[MAX_EMPLOYEES];
-extern Product products[MAX_PRODUCTS];
-
-// Declare Function Prototypes (already defined earlier)
-extern void login();
-extern void addProduct(Product products[], int *productCount);
-extern void viewStock(Product products[], int productCount);
-extern void recordSale(Sale sales[], int *saleCount, Product products[], int productCount);
-extern void recordPurchase(Purchase purchases[], int *purchaseCount, Product products[], int *productCount);
-extern void addCustomer(Customer customers[], int *customerCount);
-extern void addEmployee(Employee employees[], int *employeeCount);
-extern void loadEmployees(Employee employees[], int *employeeCount);
-extern void loadCustomers(Customer customers[], int *customerCount);
-extern void loadProducts(Product products[], int *productCount);
-extern void saveEmployees(Employee employees[], int size);
-extern void saveCustomers(Customer customers[], int size);
-extern void saveProducts(Product products[], int size);
-extern void savePurchases(Purchase purchases[], int size);
-extern void saveSales(Sale sales[], int size);
-
 int main() {
     // Load necessary data from files
     int customerCount = 0, employeeCount = 0, productCount = 0, saleCount = 0, purchaseCount = 0;
