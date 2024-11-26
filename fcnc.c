@@ -27,6 +27,10 @@
 // Constants for Sales
 #define MAX_DISCOUNT 100 // Maximum allowable discount percentage
 
+// Constants for Purchase
+#define MAX_SUPPLIERS 100
+#define MAX_PURCHASES 1000
+
 // Structures
 typedef struct {
     char productID[10];
@@ -75,6 +79,24 @@ typedef struct {
     char userID[MAX_USERID];
     char password[MAX_PASSWORD];
 } User;
+
+// Structures for Supplier and Purchase
+typedef struct {
+    char supplierID[10];
+    char supplierName[MAX_NAME];
+    char contactInfo[50];
+    char address[100];
+} Supplier;
+
+typedef struct {
+    char purchaseID[10];
+    char productID[10];
+    char supplierID[10];
+    int quantityPurchased;
+    float totalCost;
+    char timeStamp[MAX_DATE_TIME];
+} Purchase;
+
 
 // Function prototypes
 void login();
@@ -134,3 +156,14 @@ void monthlySalesReport(Sale sales[], int size);
 void saveSales(Sale sales[], int size);
 void loadSales(Sale sales[], int *size);
 int findCustomer(Customer customers[], int size);
+
+// Function prototypes for Purchase Management
+void addPurchase(Product inventory[], int *inventorySize, Purchase purchases[], int *purchaseCount, Supplier suppliers[], int *supplierCount);
+void supplierManagement(Supplier suppliers[], int *supplierCount);
+void purchaseReports(Purchase purchases[], int size);
+void savePurchases(Purchase purchases[], int size);
+void loadPurchases(Purchase purchases[], int *size);
+void saveSuppliers(Supplier suppliers[], int size);
+void loadSuppliers(Supplier suppliers[], int *size);
+int findSupplier(Supplier suppliers[], int size);
+void addCustomerIfNotPresent(Customer customers[], int *customerCount);
