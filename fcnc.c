@@ -31,6 +31,11 @@
 #define MAX_SUPPLIERS 100
 #define MAX_PURCHASES 1000
 
+// Constants for Employee Management
+#define ADMIN "admin"
+#define CASHIER "cashier"
+#define MANAGER "manager"
+
 // Structures
 typedef struct {
     char productID[10];
@@ -43,11 +48,14 @@ typedef struct {
     char expiryDate[MAX_DATE]; // Optional, use "N/A" if not applicable
 } Product;
 
+// Structure for Employee
 typedef struct {
     char employeeID[10];
     char name[MAX_NAME];
-    char position[MAX_NAME];
-    int attendance; // 0 for absent, 1 for present
+    char role[20];  // Role like "admin", "cashier", "manager"
+    char contactInfo[50];
+    int attendance[30];  // Store attendance for 30 days
+    int attendanceCount; // Number of days attended in the month
 } Employee;
 
 typedef struct {
@@ -176,3 +184,12 @@ int findCustomerIndex(Customer customers[], int size, char customerID[10]);
 void updateLoyaltyPoints(Customer customers[], int customerIndex, float amountSpent);
 void viewCustomerDetails(Customer customers[], int customerCount);
 void applyLoyaltyDiscount(Customer customers[], int *customerCount, float *totalAmount);
+
+// Function prototypes for Employee Management
+void addEmployee(Employee employees[], int *employeeCount);
+void saveEmployees(Employee employees[], int size);
+void loadEmployees(Employee employees[], int *size);
+int findEmployeeIndex(Employee employees[], int size, char employeeID[10]);
+void recordAttendance(Employee employees[], int employeeIndex, int day);
+void viewEmployeeDetails(Employee employees[], int employeeCount);
+void restrictAccessByRole(Employee employees[], int employeeCount, char currentRole[20]);
