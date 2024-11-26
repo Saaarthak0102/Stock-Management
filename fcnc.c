@@ -22,8 +22,12 @@
 typedef struct {
     char productID[10];
     char productName[MAX_NAME];
+    char category[MAX_CATEGORY];
+    char supplier[MAX_SUPPLIER];
     int quantity;
-    float price;
+    float costPrice;
+    float sellingPrice;
+    char expiryDate[MAX_DATE]; // Optional, use "N/A" if not applicable
 } Product;
 
 typedef struct {
