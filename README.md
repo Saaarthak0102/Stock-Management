@@ -112,9 +112,3 @@ Contributions are welcome! Please follow these steps:
 This project is licensed under the MIT License.  
 """
 
-# Writing the content to a README.md file
-file_path = "/mnt/data/README.md"
-with open(file_path, "w") as file:
-    file.write(readme_content)
-
-file_path
