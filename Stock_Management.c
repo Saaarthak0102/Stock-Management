@@ -13,6 +13,43 @@
 #define SPACE 32
 #define TAB 9
 
+
+// Defining a structure to store product details like product name, product company, product ID, product price, and product quantity.
+struct item
+{
+	char productname[40],productcomp[40],c;
+	int productid;
+	int price;
+	int Qnt;
+}st;
+
+
+// Function declarations for handling console operations, user interface, product management, and 
+void wel_come(void);
+void title(void);
+void login();
+void menu(void);
+void title(void);
+void deleteproduct(void);
+void add_item();
+void read_item();
+void search_item();
+void edit_item();
+void purchase_item();
+void view_activity_log();
+void log_activity(const char *message);
+void log_purchase(const char *message);
+void update_stock();
+
+
+//Function for cursor positioning.
+void gotoxy(short x, short y)
+{
+	COORD pos ={x,y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),pos);
+}
+
+
  // Sets the text color in the console based on the provided foreground color ID.
 void setcolor(int ForgC) {
     WORD wColor;
@@ -34,46 +71,15 @@ void resetcolor() {
     SetConsoleTextAttribute(hStdOut, 7); // Reset to default (white on black)
 }
 
-// Defining a structure to store product details like product name, product company, product ID, product price, and product quantity.
-struct item
-{
-	char productname[40],productcomp[40],c;
-	int productid;
-	int price;
-	int Qnt;
-}st;
-
-
-// Function declarations for handling console operations, user interface, product management, and cursor positioning.
-void wel_come(void);
-void title(void);
-void login();
-void menu(void);
-void title(void);
-void deleteproduct(void);
-void gotoxy(short x, short y)
-{
-	COORD pos ={x,y};
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),pos);
-}
-
-void add_item();
-void read_item();
-void search_item();
-void edit_item();
-void purchase_item();
-void view_activity_log();
-void log_activity(const char *message);
-void log_purchase(const char *message);
-void update_stock();
-
-void log_add_item(const struct item *myItem) { // Log Add Item Function Declaration
+// Log Add Item Function Declaration
+void log_add_item(const struct item *myItem) { 
     char mess[200];
     sprintf(mess, "Added item: %s, ID: %d, Price: %d, Quantity: %d", myItem->productname, myItem->productid, myItem->price, myItem->Qnt);
     log_activity(mess);
 }
 
-void log_delete_item(const struct item *myItem) { // Log Delete Item Function Declaration
+// Log Delete Item Function Declaration
+void log_delete_item(const struct item *myItem) { 
     char mess[200];
     sprintf(mess, "Deleted item: %s, ID: %d, Price: %d, Quantity: %d", myItem->productname, myItem->productid, myItem->price, myItem->Qnt);
     log_activity(mess);
@@ -144,14 +150,7 @@ void log_purchase(const char *message) {
     fclose(log_file);
 }
 
-void main(void)
-{
-wel_come(); //call for welcome screen function
-login(); //call for login function
-}
-
-
-
+//Welcome page
 void wel_come(void) {
     time_t t;
     time(&t);
@@ -195,13 +194,14 @@ void wel_come(void) {
     system("cls");
 }
 
-
+//To display Title of the project
 void title(void)
 {
     printf("\n\n\n\t\t\t\t\tSTOCK MANAGEMENT SYSTEM\n");
     printf("\t\t\t\t\t===========================\n");
 }
 
+//User login
 void login()
 {
     int a = 0, i = 0;
@@ -275,6 +275,7 @@ void login()
 }
 
 
+//Main menu
 void menu(void)
 {
     int choice;
@@ -361,7 +362,7 @@ void menu(void)
 }
 
 
-
+//To add a new item
 void add_item() {
 
     int index, valid;
@@ -490,6 +491,8 @@ void add_item() {
     menu();  // Return to the main menu
 }
 
+
+//To read or display the items presents in the stock
 void read_item()
 {
     FILE *f;  // File pointer for reading product data
@@ -546,6 +549,8 @@ void read_item()
     menu();  // Return to the main menu
 }
 
+
+//To search item present in the stock using product id or name
 void search_item() {
     char target[40];
     int found = 0, choice;
@@ -678,6 +683,7 @@ void search_item() {
     menu();  // Go back to the main menu after the search operation
 }
 
+//To edit an existing item present in the stock
 void edit_item()
 {
 
@@ -700,7 +706,6 @@ void edit_item()
     }
     else
     {
-
 
         // Open a temporary file to store edited records
         rp = fopen("TempFile.dat", "w+");
@@ -875,6 +880,7 @@ void edit_item()
     menu();  // Return to the main menu
 }
 
+//To add or remove stock of an item present in the inventory
 void update_stock() {
     FILE *fp, *temp;
     int id, found = 0, choice, value;
@@ -1118,7 +1124,7 @@ void purchase_item() {
     menu();
 }
 
-
+//To delete an existing item present in the stock by using its name
 void deleteproduct(void)
 {
     char target[40];
@@ -1204,10 +1210,11 @@ void deleteproduct(void)
     menu();  // Go back to the main menu after the operation
 }
 
-
-
-
-
+void main(void)
+{
+wel_come(); //call for welcome screen function
+login(); //call for login function
+}
 
 
 
