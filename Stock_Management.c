@@ -490,7 +490,61 @@ void add_item() {
     menu();  // Return to the main menu
 }
 
+void read_item()
+{
+    FILE *f;  // File pointer for reading product data
+    int i, q;  // Iteration variables
 
+    // Open the file "NextFile.txt" for reading
+    if ((f = fopen("NextFile.txt", "r")) == NULL)
+    {
+        // If file is not found or empty, notify the user
+        setcolor(4);
+        system("cls");
+        printf("\n=========== No Records Found ===========\n");
+        printf("|   No records available in the database  |\n");
+        printf("+-----------------------------------------+\n");
+        resetcolor();
+        printf("\nPress any key to go to Main Menu!\n");
+        getch();
+        menu();  // Return to the main menu if no records are found
+        return;
+    }
+
+    else
+
+    {
+        // Display a header for the product list
+        system("cls");
+        setcolor(1);
+        printf("\n=========== Item List ===========\n");
+        resetcolor();
+        printf("+-----------------------------------------------------------------------------------------+\n");
+
+        // Display column headers for product information
+        printf("| %-20s | %-15s | %-20s | %-10s | %-10s |\n", "Product Name", "Price (Rupees)", "Company", "Product ID", "Quantity");
+        printf("+-----------------------------------------------------------------------------------------+\n");
+
+        // Start reading the data from the file and display it
+        q = 8;  // Start from the 8th row for displaying product data
+        while (fscanf(f, "%s %s %i %i %i\n", st.productname, st.productcomp, &st.price, &st.productid, &st.Qnt) != EOF)
+        {
+            // Print each product's information in the respective columns
+            printf("| %-20s | %-15i | %-20s | %-10i | %-10i |\n", st.productname, st.price, st.productcomp, st.productid, st.Qnt);
+        }
+
+        // Print a separator line after all records are displayed
+        printf("+-----------------------------------------------------------------------------------------+\n");
+    }
+
+    // Close the file after reading
+    fclose(f);
+
+    // Prompt the user to return to the main menu
+    printf("\nPress any key to go to Main Menu!\n");
+    getch();  // Wait for the user to press a key
+    menu();  // Return to the main menu
+}
 
 void search_item() {
     char target[40];
@@ -622,149 +676,6 @@ void search_item() {
     while ((st.c = getch()) == '\r');
     
     menu();  // Go back to the main menu after the search operation
-}
-
-
-
-void deleteproduct(void)
-{
-    char target[40];
-    int found = 0;
-    FILE *sfile, *tfile;
-
-    // Open the original file in read mode and a temporary file in write mode
-    sfile = fopen("NextFile.txt", "r");
-    tfile = fopen("TempFile.dat", "w+");
-
-    // Check if the files were opened successfully
-    if (sfile == NULL || tfile == NULL)
-    {
-        setcolor(4);
-        printf("\nError: Could not open file.\n");
-        resetcolor();
-        getch();
-        menu();  // Return to the menu if file can't be opened
-        return;
-    }
-
-    // Prompt the user to enter the name of the product to delete
-    system("cls");
-    setcolor(1);
-    printf("\n=========== Delete Product ===========\n");
-    resetcolor();
-    printf("+------------------------------------------+\n");
-    printf("| Enter product name to delete: ");
-    fflush(stdin);
-    scanf("%s", target);
-    target[0] = toupper(target[0]);  // Capitalize the first letter for consistent search
-
-    // Read through the file and search for the product to delete
-    while (fscanf(sfile, "%s %s %i %i %i\n", st.productname, st.productcomp, &st.price, &st.productid, &st.Qnt) != EOF)
-    {
-        // If the product is found, mark it as found and skip writing it to the temp file
-        if (strcmp(target, st.productname) == 0)
-        {
-            found = 1;
-            log_delete_item(&st);  // Log the deletion activity
-        }
-        else
-        {
-            // If the product is not found, copy it to the temporary file
-            fprintf(tfile, "%s %s %i %i %i\n", st.productname, st.productcomp, st.price, st.productid, st.Qnt);
-        }
-    }
-
-    // Display the result of the operation
-    if (!found)
-    {
-        // If the product is not found, notify the user
-        setcolor(4);
-        printf("\n+------------------------------------------+\n");
-        printf("|        Product Not Found                  |\n");
-        printf("+------------------------------------------+\n");
-        resetcolor();
-    }
-    else
-    {
-        // If the product is found and deleted, notify the user
-        setcolor(2);
-        printf("\n+------------------------------------------+\n");
-        printf("|        Product Deleted Successfully      |\n");
-        printf("+------------------------------------------+\n");
-        resetcolor();
-    }
-
-    // Close the opened files
-    fclose(sfile);
-    fclose(tfile);
-
-    // Remove the original file and rename the temporary file as the original file
-    remove("NextFile.txt");
-    rename("TempFile.dat", "NextFile.txt");
-
-    // Prompt the user to return to the main menu
-    printf("\nPress any key to go to Main Menu!\n");
-
-    // Wait for the user to press a key before returning to the menu
-    while ((st.c = getch()) == '\r');
-    
-    menu();  // Go back to the main menu after the operation
-}
-
-void read_item()
-{
-    FILE *f;  // File pointer for reading product data
-    int i, q;  // Iteration variables
-
-    // Open the file "NextFile.txt" for reading
-    if ((f = fopen("NextFile.txt", "r")) == NULL)
-    {
-        // If file is not found or empty, notify the user
-        setcolor(4);
-        system("cls");
-        printf("\n=========== No Records Found ===========\n");
-        printf("|   No records available in the database  |\n");
-        printf("+-----------------------------------------+\n");
-        resetcolor();
-        printf("\nPress any key to go to Main Menu!\n");
-        getch();
-        menu();  // Return to the main menu if no records are found
-        return;
-    }
-
-    else
-
-    {
-        // Display a header for the product list
-        system("cls");
-        setcolor(1);
-        printf("\n=========== Item List ===========\n");
-        resetcolor();
-        printf("+-----------------------------------------------------------------------------------------+\n");
-
-        // Display column headers for product information
-        printf("| %-20s | %-15s | %-20s | %-10s | %-10s |\n", "Product Name", "Price (Rupees)", "Company", "Product ID", "Quantity");
-        printf("+-----------------------------------------------------------------------------------------+\n");
-
-        // Start reading the data from the file and display it
-        q = 8;  // Start from the 8th row for displaying product data
-        while (fscanf(f, "%s %s %i %i %i\n", st.productname, st.productcomp, &st.price, &st.productid, &st.Qnt) != EOF)
-        {
-            // Print each product's information in the respective columns
-            printf("| %-20s | %-15i | %-20s | %-10i | %-10i |\n", st.productname, st.price, st.productcomp, st.productid, st.Qnt);
-        }
-
-        // Print a separator line after all records are displayed
-        printf("+-----------------------------------------------------------------------------------------+\n");
-    }
-
-    // Close the file after reading
-    fclose(f);
-
-    // Prompt the user to return to the main menu
-    printf("\nPress any key to go to Main Menu!\n");
-    getch();  // Wait for the user to press a key
-    menu();  // Return to the main menu
 }
 
 void edit_item()
@@ -964,111 +875,6 @@ void edit_item()
     menu();  // Return to the main menu
 }
 
-// Purchase Function Implementation
-void purchase_item() {
-    int id, quantity, found = 0;
-    FILE *fp, *temp, *bill;
-
-    // Open the inventory file
-    fp = fopen("NextFile.txt", "r");
-    if (fp == NULL) {
-        setcolor(4);
-        printf("Error: No records available for purchase.\n");
-        resetcolor();
-        getch();
-        menu();
-        return;
-    }
-
-    temp = fopen("TempFile.dat", "w");  // Temp file for updated inventory
-    bill = fopen("bill.txt", "w");     // Bill file to record purchase details
-    setcolor(1);
-    printf("\n=========== Search Product ===========\n");
-    resetcolor();
-    printf("Enter the Product ID to purchase: ");
-    scanf("%d", &id);
-
-    // Search for the product in the inventory
-    while (fscanf(fp, "%s %s %d %d %d", st.productname, st.productcomp, &st.price, &st.productid, &st.Qnt) != EOF) {
-        if (id == st.productid) {
-            found = 1;
-            printf("Enter quantity to purchase: ");
-            scanf("%d", &quantity);
-
-            if (quantity <= st.Qnt) {
-                // Update inventory
-                st.Qnt -= quantity;
-
-                // Generate bill
-                fprintf(bill, "=========== BILL ===========\n");
-                fprintf(bill, "Product Name : %s\n", st.productname);
-                fprintf(bill, "Company      : %s\n", st.productcomp);
-                fprintf(bill, "Price (Each) : %d\n", st.price);
-                fprintf(bill, "Quantity     : %d\n", quantity);
-                fprintf(bill, "Total Price  : %d\n", quantity * st.price);
-                fprintf(bill, "============================\n");
-
-                // Log purchase
-                char log_message[200];
-                snprintf(log_message, sizeof(log_message), "Purchased %d of %s (ID: %d) for %d.",
-                         quantity, st.productname, st.productid, quantity * st.price);
-                log_purchase(log_message);
-                log_activity(log_message);
-
-                setcolor(2);
-                printf("\n=======================================================================");
-                printf("\n|                      Purchase Successfull                           |");
-                printf("\n=======================================================================\n");
-                resetcolor();
-                printf("| Product ID   : %d\n", st.productid);
-                printf("| Product Name : %s\n", st.productname);
-                printf("| Company      : %s\n", st.productcomp);
-                printf("| Price (Each) : %d\n", st.price);
-                printf("| Quantity     : %d\n", quantity);
-                printf("| Total Price  : %d\n", quantity * st.price);
-                setcolor(2);
-                printf("\n=======================================================================");
-                printf("\n|                      Bill Generated in 'bill.txt'                   |");
-                printf("\n=======================================================================\n");
-                resetcolor();
-                // Prompt user to return to the main menu
-                printf("\nPress any key to go to Main Menu!");
-            } else {
-                setcolor(4);
-                printf("\n=======================================================================");
-                printf("\n|          Error: Insufficient stock. Available quantity: %d           |", st.Qnt);
-                printf("\n=======================================================================\n");
-                resetcolor();
-                // Prompt user to return to the main menu  
-                printf("\nPress any key to go to Main Menu!");
-            }
-        }
-        // Write product details (updated or unchanged) to the temp file
-        fprintf(temp, "%s %s %d %d %d\n", st.productname, st.productcomp, st.price, st.productid, st.Qnt);
-    }
-
-    if (!found) {
-        setcolor(4);
-        printf("Error: Product not found.\n");
-        resetcolor();
-    }
-
-    // Close all files
-    fclose(fp);
-    fclose(temp);
-    fclose(bill);
-
-    // Replace original inventory file with updated file
-    remove("NextFile.txt");
-    rename("TempFile.dat", "NextFile.txt");
-
-    getch();
-    menu();
-}
-
-
-
-// Update Stock Function Implementation
 void update_stock() {
     FILE *fp, *temp;
     int id, found = 0, choice, value;
@@ -1209,6 +1015,200 @@ void update_stock() {
     getch();
     menu();
 }
+
+// Purchase Function Implementation
+void purchase_item() {
+    int id, quantity, found = 0;
+    FILE *fp, *temp, *bill;
+
+    // Open the inventory file
+    fp = fopen("NextFile.txt", "r");
+    if (fp == NULL) {
+        setcolor(4);
+        printf("Error: No records available for purchase.\n");
+        resetcolor();
+        getch();
+        menu();
+        return;
+    }
+
+    temp = fopen("TempFile.dat", "w");  // Temp file for updated inventory
+    bill = fopen("bill.txt", "w");     // Bill file to record purchase details
+    setcolor(1);
+    printf("\n=========== Search Product ===========\n");
+    resetcolor();
+    printf("Enter the Product ID to purchase: ");
+    scanf("%d", &id);
+
+    // Search for the product in the inventory
+    while (fscanf(fp, "%s %s %d %d %d", st.productname, st.productcomp, &st.price, &st.productid, &st.Qnt) != EOF) {
+        if (id == st.productid) {
+            found = 1;
+            printf("Enter quantity to purchase: ");
+            scanf("%d", &quantity);
+
+            if (quantity <= st.Qnt) {
+                // Update inventory
+                st.Qnt -= quantity;
+
+                // Generate bill
+                fprintf(bill, "=========== BILL ===========\n");
+                fprintf(bill, "Product Name : %s\n", st.productname);
+                fprintf(bill, "Company      : %s\n", st.productcomp);
+                fprintf(bill, "Price (Each) : %d\n", st.price);
+                fprintf(bill, "Quantity     : %d\n", quantity);
+                fprintf(bill, "Total Price  : %d\n", quantity * st.price);
+                fprintf(bill, "============================\n");
+
+                // Log purchase
+                char log_message[200];
+                snprintf(log_message, sizeof(log_message), "Purchased %d of %s (ID: %d) for %d.",
+                         quantity, st.productname, st.productid, quantity * st.price);
+                log_purchase(log_message);
+                log_activity(log_message);
+
+                setcolor(2);
+                printf("\n=======================================================================");
+                printf("\n|                      Purchase Successfull                           |");
+                printf("\n=======================================================================\n");
+                resetcolor();
+                printf("| Product ID   : %d\n", st.productid);
+                printf("| Product Name : %s\n", st.productname);
+                printf("| Company      : %s\n", st.productcomp);
+                printf("| Price (Each) : %d\n", st.price);
+                printf("| Quantity     : %d\n", quantity);
+                printf("| Total Price  : %d\n", quantity * st.price);
+                setcolor(2);
+                printf("\n=======================================================================");
+                printf("\n|                      Bill Generated in 'bill.txt'                   |");
+                printf("\n=======================================================================\n");
+                resetcolor();
+                // Prompt user to return to the main menu
+                printf("\nPress any key to go to Main Menu!");
+            } else {
+                setcolor(4);
+                printf("\n=======================================================================");
+                printf("\n|          Error: Insufficient stock. Available quantity: %d           |", st.Qnt);
+                printf("\n=======================================================================\n");
+                resetcolor();
+                // Prompt user to return to the main menu  
+                printf("\nPress any key to go to Main Menu!");
+            }
+        }
+        // Write product details (updated or unchanged) to the temp file
+        fprintf(temp, "%s %s %d %d %d\n", st.productname, st.productcomp, st.price, st.productid, st.Qnt);
+    }
+
+    if (!found) {
+        setcolor(4);
+        printf("Error: Product not found.\n");
+        resetcolor();
+    }
+
+    // Close all files
+    fclose(fp);
+    fclose(temp);
+    fclose(bill);
+
+    // Replace original inventory file with updated file
+    remove("NextFile.txt");
+    rename("TempFile.dat", "NextFile.txt");
+
+    getch();
+    menu();
+}
+
+
+void deleteproduct(void)
+{
+    char target[40];
+    int found = 0;
+    FILE *sfile, *tfile;
+
+    // Open the original file in read mode and a temporary file in write mode
+    sfile = fopen("NextFile.txt", "r");
+    tfile = fopen("TempFile.dat", "w+");
+
+    // Check if the files were opened successfully
+    if (sfile == NULL || tfile == NULL)
+    {
+        setcolor(4);
+        printf("\nError: Could not open file.\n");
+        resetcolor();
+        getch();
+        menu();  // Return to the menu if file can't be opened
+        return;
+    }
+
+    // Prompt the user to enter the name of the product to delete
+    system("cls");
+    setcolor(1);
+    printf("\n=========== Delete Product ===========\n");
+    resetcolor();
+    printf("+------------------------------------------+\n");
+    printf("| Enter product name to delete: ");
+    fflush(stdin);
+    scanf("%s", target);
+    target[0] = toupper(target[0]);  // Capitalize the first letter for consistent search
+
+    // Read through the file and search for the product to delete
+    while (fscanf(sfile, "%s %s %i %i %i\n", st.productname, st.productcomp, &st.price, &st.productid, &st.Qnt) != EOF)
+    {
+        // If the product is found, mark it as found and skip writing it to the temp file
+        if (strcmp(target, st.productname) == 0)
+        {
+            found = 1;
+            log_delete_item(&st);  // Log the deletion activity
+        }
+        else
+        {
+            // If the product is not found, copy it to the temporary file
+            fprintf(tfile, "%s %s %i %i %i\n", st.productname, st.productcomp, st.price, st.productid, st.Qnt);
+        }
+    }
+
+    // Display the result of the operation
+    if (!found)
+    {
+        // If the product is not found, notify the user
+        setcolor(4);
+        printf("\n+------------------------------------------+\n");
+        printf("|        Product Not Found                  |\n");
+        printf("+------------------------------------------+\n");
+        resetcolor();
+    }
+    else
+    {
+        // If the product is found and deleted, notify the user
+        setcolor(2);
+        printf("\n+------------------------------------------+\n");
+        printf("|        Product Deleted Successfully      |\n");
+        printf("+------------------------------------------+\n");
+        resetcolor();
+    }
+
+    // Close the opened files
+    fclose(sfile);
+    fclose(tfile);
+
+    // Remove the original file and rename the temporary file as the original file
+    remove("NextFile.txt");
+    rename("TempFile.dat", "NextFile.txt");
+
+    // Prompt the user to return to the main menu
+    printf("\nPress any key to go to Main Menu!\n");
+
+    // Wait for the user to press a key before returning to the menu
+    while ((st.c = getch()) == '\r');
+    
+    menu();  // Go back to the main menu after the operation
+}
+
+
+
+
+
+
 
 
 // End of the program
