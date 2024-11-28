@@ -174,9 +174,6 @@ void wel_come(void) {
     printf("|\t\t\t\t\t    Project By:\t\t\t\t\t\t\t|\n");
     printf("|\t\t\t\t\t Sarthak Sabharwal \t\t\t\t\t\t|\n");
     printf("|\t\t\t\t\t Pranjal Srivastava \t\t\t\t\t\t|\n");
-   // printf("|\t\t\t\t\t Leepakshi Bhatia \t\t\t\t\t\t|\n");
-   // printf("|\t\t\t\t\t Parth Juneja \t\t\t\t\t\t\t|\n");
-   // printf("|\t\t\t\t\t Paridhi Jain \t\t\t\t\t\t\t|\n");
     resetcolor();
     printf("|\t\t\t\t\t\t\t\t\t\t\t\t\t|\n");
     setcolor(10);
