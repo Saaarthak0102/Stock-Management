@@ -14,6 +14,11 @@ A C-language-based project designed to efficiently manage stock information, str
 
 ---
 
+## Demo Video
+https://www.youtube.com/watch?v=sypK16m4FkE
+
+---
+
 ## Table of Contents  
 1. [Introduction](#introduction)  
 2. [Project Objectives](#project-objectives)  
