@@ -114,6 +114,6 @@ Contributions are welcome! Please follow these steps:
 ---
 
 ## License  
-This project is licensed under the MIT License.  
-"""
+This project is licensed under the [MIT License](https://github.com/Saaarthak0102/Stock-Management/blob/main/LICENSE).  
+
 
