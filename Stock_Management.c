@@ -181,9 +181,6 @@ void wel_come(void) {
     printf("|\t\t\t\t\t\t\t\t\t\t\t\t\t|\n");
     printf("=========================================================================================================\n");
     printf("|\t\t\t\t\t\t\t\t\t\t\t\t\t|\n");
-    setcolor(10);
-    printf("|\t\t\t\t\tDelivering Excellence Since 2000\t\t\t\t|\n");
-    resetcolor(10);
     printf("|\t\t\t\t\t\t\t\t\t\t\t\t\t|\n");
     printf("=========================================================================================================\n");
     printf("|\t\t\t\t\t\t\t\t\t\t\t\t\t|\n");
