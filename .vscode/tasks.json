@@ -19,6 +19,8 @@
                 "src/supplier.c",
                 "src/sales.c",
                 "src/reports.c",
+                "src/transaction.c",
+                "src/graph.c",
                 "src/utils.c"
             ],
             "group": {
@@ -42,12 +44,7 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "runOptions": {
-                "runOn": "folderOpen"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "problemMatcher": []
         }
     ]
 }

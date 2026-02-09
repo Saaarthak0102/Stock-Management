@@ -6,6 +6,7 @@
 #include "../include/sales.h"
 #include "../include/stock.h"
 #include "../include/reports.h"
+#include "../include/transaction.h"
 #include "../include/utils.h"
 
 int get_next_bill_number(void) {
@@ -31,24 +32,62 @@ int validate_sale(int product_id, int quantity) {
     return 1;
 }
 
+/*
+ * Process a sale transaction
+ * Updates stock quantity, records sale, and logs transaction
+ * Returns: 1 on success, 0 on failure
+ */
 int process_sale(Sale *sale) {
+    if (sale == NULL) return 0;
+    
     Stock *stock = search_stock_by_id(sale->product_id);
-    if (stock == NULL) return 0;
+    if (stock == NULL) {
+        set_color(BRIGHT_RED);
+        printf("Error: Product not found.\n");
+        reset_color();
+        return 0;
+    }
+    
+    /* Update stock quantity */
     stock->quantity -= sale->quantity;
-    update_stock(sale->product_id, stock);
+    
+    if (!update_stock(sale->product_id, stock)) {
+        free(stock);
+        set_color(BRIGHT_RED);
+        printf("Error: Failed to update stock.\n");
+        reset_color();
+        return 0;
+    }
+    
+    /* Record sale in sales file */
     FILE *file = fopen(SALES_FILE, "ab");
     if (file == NULL) {
         free(stock);
+        set_color(BRIGHT_RED);
+        printf("Error: Unable to open sales file.\n");
+        reset_color();
         return 0;
     }
-    if (fwrite(sale, sizeof(Sale), 1, file)) {
+    
+    if (fwrite(sale, sizeof(Sale), 1, file) != 1) {
         fclose(file);
         free(stock);
-        return 1;
+        set_color(BRIGHT_RED);
+        printf("Error: Failed to record sale.\n");
+        reset_color();
+        return 0;
     }
     fclose(file);
+    
+    /* Record transaction for sale */
+    char note[MAX_TRANSACTION_NOTE];
+    snprintf(note, sizeof(note), "Sale - Bill #%d", sale->bill_number);
+    record_transaction(sale->product_id, TRANS_SALE, 
+                      -(sale->quantity), stock->quantity, 
+                      sale->price, note);
+    
     free(stock);
-    return 0;
+    return 1;
 }
 
 float calculate_total_sales(void) {
@@ -88,42 +127,114 @@ void generate_bill(Sale *sale) {
     fclose(file);
 }
 
+/*
+ * Create a new sale transaction
+ * Interactive function with validation and confirmation
+ * Returns: 1 on success, 0 on failure
+ */
 int create_sale(void) {
     Sale sale;
+    
     printf("\nEnter Product ID to sell: ");
-    scanf("%d", &sale.product_id);
-    Stock *stock = search_stock_by_id(sale.product_id);
-    if (stock == NULL) {
-        printf("Product not found.\n");
+    if (scanf("%d", &sale.product_id) != 1) {
+        fflush(stdin);
+        set_color(BRIGHT_RED);
+        printf("Invalid input.\n");
+        reset_color();
         return 0;
     }
+    
+    Stock *stock = search_stock_by_id(sale.product_id);
+    if (stock == NULL) {
+        set_color(BRIGHT_RED);
+        printf("Product not found.\n");
+        reset_color();
+        return 0;
+    }
+    
+    /* Copy product information */
     strncpy(sale.product_name, stock->name, sizeof(sale.product_name) - 1);
     sale.product_name[sizeof(sale.product_name) - 1] = '\0';
     sale.price = stock->price;
-    printf("\nProduct: %s\nAvailable: %d\nPrice: %.2f\n", sale.product_name, stock->quantity, sale.price);
-    printf("\nEnter quantity to sell: ");
-    scanf("%d", &sale.quantity);
-    if (sale.quantity > stock->quantity) {
-        printf("Insufficient stock.\n");
+    
+    /* Display product info */
+    printf("\nProduct: %s\n", sale.product_name);
+    printf("Available: %d units\n", stock->quantity);
+    printf("Price per unit: %.2f\n", sale.price);
+    
+    if (stock->quantity == 0) {
+        set_color(BRIGHT_RED);
+        printf("\nError: Product is out of stock!\n");
+        reset_color();
         free(stock);
         return 0;
     }
+    
+    /* Get quantity */
+    int valid = 0;
+    do {
+        printf("\nEnter quantity to sell (1-%d): ", stock->quantity);
+        if (scanf("%d", &sale.quantity) != 1) {
+            fflush(stdin);
+            set_color(BRIGHT_RED);
+            printf("Invalid input. Please enter a number.\n");
+            reset_color();
+            continue;
+        }
+        
+        if (sale.quantity <= 0) {
+            set_color(BRIGHT_RED);
+            printf("Quantity must be greater than 0.\n");
+            reset_color();
+        } else if (sale.quantity > stock->quantity) {
+            set_color(BRIGHT_RED);
+            printf("Insufficient stock. Only %d units available.\n", stock->quantity);
+            reset_color();
+        } else {
+            valid = 1;
+        }
+    } while (!valid);
+    
     free(stock);
+    
+    /* Calculate total */
     sale.total_amount = sale.price * sale.quantity;
     sale.bill_number = get_next_bill_number();
     sale.id = sale.bill_number;
     sale.sale_date = time(NULL);
+    
+    /* Display summary */
+    printf("\n--- Sale Summary ---\n");
+    printf("Product: %s\n", sale.product_name);
+    printf("Quantity: %d\n", sale.quantity);
+    printf("Unit Price: %.2f\n", sale.price);
+    printf("Total Amount: %.2f\n", sale.total_amount);
+    
     if (confirm_action("\nProcess this sale?")) {
         if (process_sale(&sale)) {
             generate_bill(&sale);
+            
             char log_msg[200];
-            snprintf(log_msg, sizeof(log_msg), "Sale #%d: %s (Qty: %d, Amount: %.2f)",
-                     sale.bill_number, sale.product_name, sale.quantity, sale.total_amount);
+            snprintf(log_msg, sizeof(log_msg), 
+                    "Sale #%d: %s (Qty: %d, Amount: %.2f)",
+                    sale.bill_number, sale.product_name, 
+                    sale.quantity, sale.total_amount);
             log_activity("SALE", log_msg);
-            printf("Sale processed. Bill generated.\n");
+            
+            set_color(BRIGHT_GREEN);
+            printf("\nSale processed successfully!\n");
+            printf("Bill #%d has been generated.\n", sale.bill_number);
+            reset_color();
             return 1;
+        } else {
+            set_color(BRIGHT_RED);
+            printf("\nFailed to process sale.\n");
+            reset_color();
         }
+    } else {
+        printf("\nSale cancelled.\n");
     }
+    
     return 0;
 }
 

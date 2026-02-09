@@ -7,6 +7,8 @@
 #include "../include/supplier.h"
 #include "../include/sales.h"
 #include "../include/reports.h"
+#include "../include/transaction.h"
+#include "../include/graph.h"
 #include "../include/utils.h"
 
 static void print_banner_file(void) {
@@ -77,20 +79,25 @@ void display_main_menu(void) {
 
 void display_stock_menu(void) {
     int choice = 0;
-    while (choice != 10) {
+    while (choice != 13) {
         clear_screen();
         display_menu_header("STOCK MANAGEMENT");
-        printf("\n1. Add New Product\n");
+        printf("\n--- Basic Operations ---\n");
+        printf("1. Add New Product\n");
         printf("2. View All Products\n");
         printf("3. Search Product\n");
         printf("4. Update Product\n");
         printf("5. Delete Product\n");
         printf("6. Update Stock Quantity\n");
+        printf("\n--- Analysis & Reports ---\n");
         printf("7. Sort by Price\n");
         printf("8. Sort by Quantity\n");
         printf("9. View Low Stock Alerts\n");
-        printf("10. Return to Main Menu\n");
-        printf("\nEnter your choice [1-10]: ");
+        printf("10. View Transaction History\n");
+        printf("11. View Stock Trend Graph\n");
+        printf("12. View Stock Bar Graph\n");
+        printf("13. Return to Main Menu\n");
+        printf("\nEnter your choice [1-13]: ");
         scanf("%d", &choice);
         fflush(stdin);
         clear_screen();
@@ -174,14 +181,20 @@ void display_stock_menu(void) {
                     printf("Product not found.\n");
                     reset_color();
                 } else {
-                    printf("Current Qty: %d\n", stock->quantity);
+                    int old_qty = stock->quantity;
+                    printf("Current Qty: %d\n", old_qty);
                     printf("Enter adjustment (+/-): ");
                     scanf("%d", &qty);
                     stock->quantity += qty;
                     if (stock->quantity < 0) stock->quantity = 0;
                     if (update_stock(id, stock)) {
+                        /* Record transaction for manual adjustment */
+                        char note[MAX_TRANSACTION_NOTE];
+                        snprintf(note, sizeof(note), "Manual adjustment: %+d", qty);
+                        record_transaction(id, TRANS_ADJUSTMENT, qty, 
+                                         stock->quantity, stock->price, note);
                         set_color(BRIGHT_GREEN);
-                        printf("Stock updated.\n");
+                        printf("Stock updated successfully.\n");
                         reset_color();
                     }
                     free(stock);
@@ -204,7 +217,30 @@ void display_stock_menu(void) {
                 display_low_stock_alerts();
                 pause_screen();
                 break;
-            case 10:
+            case 10: {
+                int id;
+                display_menu_header("TRANSACTION HISTORY");
+                printf("Enter Product ID: ");
+                scanf("%d", &id);
+                display_stock_transaction_history(id);
+                pause_screen();
+                break;
+            }
+            case 11: {
+                int id;
+                display_menu_header("STOCK TREND GRAPH");
+                printf("Enter Product ID: ");
+                scanf("%d", &id);
+                display_stock_trend_graph(id);
+                pause_screen();
+                break;
+            }
+            case 12:
+                display_menu_header("STOCK BAR GRAPH");
+                display_stock_bar_graph();
+                pause_screen();
+                break;
+            case 13:
                 return;
             default:
                 set_color(BRIGHT_RED);
@@ -376,7 +412,7 @@ void display_sales_menu(void) {
 
 void display_reports_menu(void) {
     int choice = 0;
-    while (choice != 8) {
+    while (choice != 10) {
         clear_screen();
         display_menu_header("REPORTS AND ANALYTICS");
         printf("\n1. Daily Sales Report\n");
@@ -384,10 +420,12 @@ void display_reports_menu(void) {
         printf("3. Revenue Report\n");
         printf("4. Stock Valuation\n");
         printf("5. Low Stock Report\n");
-        printf("6. Activity Logs\n");
-        printf("7. Export to CSV\n");
-        printf("8. Return to Main Menu\n");
-        printf("\nEnter your choice [1-8]: ");
+        printf("6. Low Stock Graph (Visual)\n");
+        printf("7. Recent Transactions\n");
+        printf("8. Activity Logs\n");
+        printf("9. Export to CSV\n");
+        printf("10. Return to Main Menu\n");
+        printf("\nEnter your choice [1-10]: ");
         scanf("%d", &choice);
         fflush(stdin);
         clear_screen();
@@ -418,11 +456,28 @@ void display_reports_menu(void) {
                 pause_screen();
                 break;
             case 6:
+                display_menu_header("LOW STOCK VISUAL GRAPH");
+                display_low_stock_graph();
+                pause_screen();
+                break;
+            case 7: {
+                int limit;
+                display_menu_header("RECENT TRANSACTIONS");
+                printf("How many recent transactions to view (1-50): ");
+                if (scanf("%d", &limit) != 1 || limit < 1) {
+                    limit = 20;
+                }
+                if (limit > 50) limit = 50;
+                display_recent_transactions(limit);
+                pause_screen();
+                break;
+            }
+            case 8:
                 display_menu_header("ACTIVITY LOGS");
                 display_activity_logs();
                 pause_screen();
                 break;
-            case 7:
+            case 9:
                 display_menu_header("EXPORT TO CSV");
                 if (export_to_csv()) {
                     set_color(BRIGHT_GREEN);
@@ -435,7 +490,7 @@ void display_reports_menu(void) {
                 }
                 pause_screen();
                 break;
-            case 8:
+            case 10:
                 return;
             default:
                 set_color(BRIGHT_RED);

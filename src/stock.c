@@ -1,3 +1,9 @@
+/*
+ * Stock Management Module
+ * Handles all stock-related operations including CRUD operations,
+ * searching, sorting, and low stock alerts.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,8 +12,14 @@
 #include <conio.h>
 #include "../include/stock.h"
 #include "../include/reports.h"
+#include "../include/transaction.h"
 #include "../include/utils.h"
 
+/*
+ * Get the next available stock ID
+ * Scans all existing stock records to find the maximum ID
+ * Returns: Next available ID (max_id + 1)
+ */
 int get_next_stock_id(void) {
     FILE *file = fopen(STOCK_FILE, "rb");
     if (file == NULL) return 1;
@@ -20,6 +32,10 @@ int get_next_stock_id(void) {
     return max_id + 1;
 }
 
+/*
+ * Check if a stock ID already exists
+ * Returns: 1 if exists, 0 if not found
+ */
 int stock_id_exists(int id) {
     FILE *file = fopen(STOCK_FILE, "rb");
     if (file == NULL) return 0;
@@ -34,67 +50,167 @@ int stock_id_exists(int id) {
     return 0;
 }
 
+/*
+ * Add a new stock item to inventory
+ * Validates all inputs and records transaction history
+ * Returns: 1 on success, 0 on failure
+ */
 int add_stock(Stock *stock) {
     (void)stock;
     Stock new_stock;
     display_menu_header("ADD NEW PRODUCT");
+    
+    /* Auto-assign ID */
     printf("\nProduct ID: ");
     new_stock.id = get_next_stock_id();
     printf("%d (Auto-assigned)\n", new_stock.id);
 
+    /* Validate product name - alphabetic characters only */
     int valid = 0;
     do {
         fflush(stdin);
         printf("\nProduct Name: ");
-        fgets(new_stock.name, sizeof(new_stock.name), stdin);
+        if (fgets(new_stock.name, sizeof(new_stock.name), stdin) == NULL) {
+            set_color(BRIGHT_RED);
+            printf("Input error. Please try again.\n");
+            reset_color();
+            continue;
+        }
         trim_string(new_stock.name);
-        if (validate_alphabetic_string(new_stock.name)) valid = 1;
+        if (strlen(new_stock.name) == 0) {
+            set_color(BRIGHT_RED);
+            printf("Name cannot be empty.\n");
+            reset_color();
+            continue;
+        }
+        if (validate_alphabetic_string(new_stock.name)) {
+            valid = 1;
+        } else {
+            set_color(BRIGHT_RED);
+            printf("Invalid name. Use only alphabetic characters.\n");
+            reset_color();
+        }
     } while (!valid);
 
+    /* Validate category */
     valid = 0;
     do {
         fflush(stdin);
         printf("\nCategory: ");
-        fgets(new_stock.category, sizeof(new_stock.category), stdin);
+        if (fgets(new_stock.category, sizeof(new_stock.category), stdin) == NULL) {
+            set_color(BRIGHT_RED);
+            printf("Input error. Please try again.\n");
+            reset_color();
+            continue;
+        }
         trim_string(new_stock.category);
-        if (validate_alphabetic_string(new_stock.category)) valid = 1;
+        if (strlen(new_stock.category) == 0) {
+            set_color(BRIGHT_RED);
+            printf("Category cannot be empty.\n");
+            reset_color();
+            continue;
+        }
+        if (validate_alphabetic_string(new_stock.category)) {
+            valid = 1;
+        } else {
+            set_color(BRIGHT_RED);
+            printf("Invalid category. Use only alphabetic characters.\n");
+            reset_color();
+        }
     } while (!valid);
 
+    /* Validate price with range check */
     valid = 0;
     do {
         printf("\nPrice (10-5000): ");
-        scanf("%f", &new_stock.price);
-        if (new_stock.price >= 10 && new_stock.price <= 5000) valid = 1;
+        if (scanf("%f", &new_stock.price) != 1) {
+            fflush(stdin);
+            set_color(BRIGHT_RED);
+            printf("Invalid input. Please enter a number.\n");
+            reset_color();
+            continue;
+        }
+        if (new_stock.price >= 10.0f && new_stock.price <= 5000.0f) {
+            valid = 1;
+        } else {
+            set_color(BRIGHT_RED);
+            printf("Price must be between 10 and 5000.\n");
+            reset_color();
+        }
     } while (!valid);
 
+    /* Validate quantity with range check */
     valid = 0;
     do {
         printf("\nQuantity (1-500): ");
-        scanf("%d", &new_stock.quantity);
-        if (new_stock.quantity >= 1 && new_stock.quantity <= 500) valid = 1;
+        if (scanf("%d", &new_stock.quantity) != 1) {
+            fflush(stdin);
+            set_color(BRIGHT_RED);
+            printf("Invalid input. Please enter a number.\n");
+            reset_color();
+            continue;
+        }
+        if (new_stock.quantity >= 1 && new_stock.quantity <= 500) {
+            valid = 1;
+        } else {
+            set_color(BRIGHT_RED);
+            printf("Quantity must be between 1 and 500.\n");
+            reset_color();
+        }
     } while (!valid);
 
+    /* Optional supplier ID */
     printf("\nSupplier ID (optional, 0 for none): ");
-    scanf("%d", &new_stock.supplier_id);
+    if (scanf("%d", &new_stock.supplier_id) != 1) {
+        new_stock.supplier_id = 0;
+    }
 
+    /* Set timestamps */
     new_stock.created_at = time(NULL);
     new_stock.modified_at = time(NULL);
 
+    /* Confirm and save */
     if (confirm_action("\nAdd this product?")) {
         FILE *file = fopen(STOCK_FILE, "ab");
-        if (file == NULL) return 0;
-        if (fwrite(&new_stock, sizeof(Stock), 1, file)) {
+        if (file == NULL) {
+            set_color(BRIGHT_RED);
+            printf("\nError: Unable to open stock file.\n");
+            reset_color();
+            return 0;
+        }
+        
+        if (fwrite(&new_stock, sizeof(Stock), 1, file) == 1) {
             fclose(file);
+            
+            /* Record transaction for stock addition */
+            char note[MAX_TRANSACTION_NOTE];
+            snprintf(note, sizeof(note), "Initial stock added");
+            record_transaction(new_stock.id, TRANS_PURCHASE, 
+                             new_stock.quantity, new_stock.quantity, 
+                             new_stock.price, note);
+            
+            /* Log activity */
             char log_msg[200];
-            snprintf(log_msg, sizeof(log_msg), "Added product: %s (ID: %d)", new_stock.name, new_stock.id);
+            snprintf(log_msg, sizeof(log_msg), 
+                    "Added product: %s (ID: %d, Qty: %d)", 
+                    new_stock.name, new_stock.id, new_stock.quantity);
             log_activity("ADD_STOCK", log_msg);
+            
+            set_color(BRIGHT_GREEN);
+            printf("\nProduct added successfully!\n");
+            reset_color();
             return 1;
         }
         fclose(file);
     }
+    
     return 0;
 }
 
+/*
+ * Display all stock items in a formatted table
+ * Shows ID, Name, Category, Price, Quantity, and Supplier ID
+ */
 void read_stock(void) {
     FILE *file = fopen(STOCK_FILE, "rb");
     if (file == NULL) {
@@ -113,10 +229,18 @@ void read_stock(void) {
     fclose(file);
 }
 
+/*
+ * Search for a stock item by ID
+ * Returns: Pointer to Stock struct (caller must free), or NULL if not found
+ */
 Stock* search_stock_by_id(int id) {
     FILE *file = fopen(STOCK_FILE, "rb");
     if (file == NULL) return NULL;
     Stock *stock = (Stock *)malloc(sizeof(Stock));
+    if (stock == NULL) {
+        fclose(file);
+        return NULL;
+    }
     while (fread(stock, sizeof(Stock), 1, file)) {
         if (stock->id == id) {
             fclose(file);
@@ -128,10 +252,18 @@ Stock* search_stock_by_id(int id) {
     return NULL;
 }
 
+/*
+ * Search for a stock item by name (case-insensitive)
+ * Returns: Pointer to Stock struct (caller must free), or NULL if not found
+ */
 Stock* search_stock_by_name(const char *name) {
     FILE *file = fopen(STOCK_FILE, "rb");
     if (file == NULL) return NULL;
     Stock *stock = (Stock *)malloc(sizeof(Stock));
+    if (stock == NULL) {
+        fclose(file);
+        return NULL;
+    }
     char search_name[MAX_PRODUCT_NAME];
     strncpy(search_name, name, sizeof(search_name) - 1);
     search_name[sizeof(search_name) - 1] = '\0';
