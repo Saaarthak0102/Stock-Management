@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Stock System",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-I.",
+                "-Wall",
+                "-Wextra",
+                "-std=c99",
+                "-o",
+                "stock_system.exe",
+                "src/main.c",
+                "src/auth.c",
+                "src/menu.c",
+                "src/stock.c",
+                "src/supplier.c",
+                "src/sales.c",
+                "src/reports.c",
+                "src/utils.c"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Run Stock System",
+            "type": "shell",
+            "command": "${workspaceFolder}/stock_system.exe",
+            "dependsOn": "Build Stock System",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}
